@@ -1,0 +1,57 @@
+* {
+
+    font-family: mukta;
+    text-align: center;
+}
+
+.jumbotron {
+    background: linear-gradient(0.25turn, navy, skyblue);
+    text-shadow: 0px 0px 3px white;
+}
+
+.display-4 {
+    text-align: end;
+}
+
+.box {
+    margin-right: 20%;
+    border: 2px black solid;
+}
+
+.searchRow {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.search {
+    width: 100%;
+    justify-content: center;
+    margin-right: 0px;
+    margin-left: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.form-control {
+    width: 100%;
+    justify-content: center;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+section .info,
+section .title {
+    width: 100%;
+    margin-right: 0px;
+    margin-left: 0px;
+    padding: 10px;
+}
+
+.textbold {
+    padding: 10px;
+    font-weight: bolder;
+}
+
+.borderBot {
+    border-bottom: 5px grey solid;
+}
