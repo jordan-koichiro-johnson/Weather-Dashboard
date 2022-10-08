@@ -8,7 +8,7 @@ var dateP = document.createElement("h2")
 var tempP = document.createElement("p")
 var windP = document.createElement("p")
 var humidityP = document.createElement("p")
-
+var searchButtonPressed = 0
 
 // function to get the latitude and longitude from a city name
 
@@ -33,15 +33,16 @@ document.getElementById("submitButton").addEventListener("click", async () => {
 
     cityName = document.getElementById("cityInput").value
 
-    //if we have stuff in our boxes, take them out.
+    //run weather function with param or city name
 
-    if (happenedOnce > 0) {
-        cityP.remove()
-        tempP.remove()
-        windP.remove()
-        humidityP.remove()
-    }
+    
 
+    searchLatLonSearchWeather(cityName)
+
+})
+
+
+function CreatePastSearchButton(){
     // create our past search buttons with style
 
     var pastSearchButton = document.createElement("button")
@@ -61,22 +62,18 @@ document.getElementById("submitButton").addEventListener("click", async () => {
         cityName = pastSearchButton.innerHTML
         searchLatLonSearchWeather(pastSearchButton.innerHTML)
         console.log(pastSearchButton.innerHTML)
+        searchButtonPressed = 1
     })
 
     document.getElementById("pastSearches").appendChild(pastSearchButton)
+}
 
-    //run weather function with param or city name
 
-    searchLatLonSearchWeather(cityName)
-
-    happenedOnce ++;
-  
-})
 
 
 async function searchLatLonSearchWeather (place) {
     
-    const weatherArray = []
+    var weatherArray = []
     // if error log it. if not get coords
     
     let city = [];
@@ -89,8 +86,30 @@ async function searchLatLonSearchWeather (place) {
         console.log(e)
     }
 
+      
+        
+
     // create latitude and longitude to put into our api
 
+    if (city.length > 0) {
+
+        if (searchButtonPressed === 0) {
+        CreatePastSearchButton();
+        }
+    //if we have stuff in our boxes, take them out.
+
+        searchButtonPressed = 0
+
+    if (happenedOnce > 0) {
+        cityP.remove()
+        tempP.remove()
+        windP.remove()
+        humidityP.remove()
+    }
+
+
+
+    
     latitude = city[0].lat
     longitude = city[0].lon
 
@@ -156,6 +175,8 @@ async function searchLatLonSearchWeather (place) {
     for (let n = 0; n < 5; n++) {
         putStuffInBoxes(weatherArray, n)
     }
+    happenedOnce ++;
+}
 
 }
 
@@ -166,7 +187,7 @@ function putStuffInBoxes (arr, x) {
     let windBlock = document.getElementById(`wind-day-${x + 1}`)
     let humidityBlock = document.getElementById(`humidity-day-${x + 1}`)
 
-    if (happenedOnce > 1) {
+    if (happenedOnce > 0) {
         dateBlock.removeChild(dateBlock.lastChild)
         dateBlock.removeChild(dateBlock.lastChild)
         tempBlock.removeChild(tempBlock.lastChild)
@@ -197,7 +218,11 @@ function putStuffInBoxes (arr, x) {
     tempBlock.appendChild(tempPa)
     windBlock.appendChild(windPa)
     humidityBlock.appendChild(humidityPa)
+
+    
+
 }
+
 
 
 
