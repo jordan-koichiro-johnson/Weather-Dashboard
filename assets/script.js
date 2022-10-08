@@ -1,9 +1,10 @@
-
 var happenedOnce = 0;
 var cityName;
 var latitude;
 var weatherURL;
 var cityP = document.createElement("h2")
+var weatherIcon = document.createElement("img")
+var dateP = document.createElement("h2")
 var tempP = document.createElement("p")
 var windP = document.createElement("p")
 var humidityP = document.createElement("p")
@@ -15,7 +16,6 @@ async function loadLatLon(place) {
     var cordURL = `https://api.openweathermap.org/geo/1.0/direct?q=${place}&limit=1&appid=41473ca700c922a2192404a846e94a4a`;
     var response = await fetch(cordURL);
     var city = await response.json();
-    console.log(response);
     return city
 }
 
@@ -24,17 +24,14 @@ async function loadLatLon(place) {
 async function loadWeatherData() {
     var response = await fetch(weatherURL)
     var weatherData = await response.json()
-    console.log(response)
     return weatherData
 }
-
 
 // creates event listener for submit button
 
 document.getElementById("submitButton").addEventListener("click", async () => {
 
     cityName = document.getElementById("cityInput").value
-    
 
     //if we have stuff in our boxes, take them out.
 
@@ -71,13 +68,15 @@ document.getElementById("submitButton").addEventListener("click", async () => {
     //run weather function with param or city name
 
     searchLatLonSearchWeather(cityName)
+
+    happenedOnce ++;
   
 })
 
 
 async function searchLatLonSearchWeather (place) {
     
-    
+    const weatherArray = []
     // if error log it. if not get coords
     
     let city = [];
@@ -109,35 +108,96 @@ async function searchLatLonSearchWeather (place) {
 
     // create a weather object containing all important parts
 
-    let weatherObject = {
-        city: cityName, 
-        latitude: latitude, 
-        longitude:longitude, 
-        temperature: weather.list[0].main.temp, 
-        wind: weather.list[0].wind.speed, 
-        humidity: weather.list[0].main.humidity
+    console.log(weather)
+
+    console.log(weather.list[0].dt_txt)
+
+    for (let i = 0; i <= 5; i ++) {
+        m = i*8
+        
+        if (m === 40) {
+            m = m-1
+        }
+
+        weatherArray.push(
+            {
+                city: cityName,
+                latitude: latitude,
+                longitude: longitude,
+                time: `${weather.list[m].dt_txt} GMT`,
+                temperature: weather.list[m].main.temp,
+                wind: weather.list[m].wind.speed, 
+                humidity: weather.list[m].main.humidity,
+                condition: weather.list[m].weather[0].icon,
+            }
+  
+        )
+        console.log(weather.list[m].dt_txt)
     }
+    // create dom elements and put them where they belong for weather
 
-    var cityBlock = document.getElementById("cityMain")
-    var tempBlock = document.getElementById("tempMain")
-    var windBlock = document.getElementById("windMain")
-    var humidityBlock = document.getElementById("humidityMain")
+    let cityBlock = document.getElementById("cityMain")
+    let tempBlock = document.getElementById("tempMain")
+    let windBlock = document.getElementById("windMain")
+    let humidityBlock = document.getElementById("humidityMain")
 
-
-
-    cityP.innerHTML = `${weatherObject.city}`
-    tempP.innerHTML = `${weatherObject.temperature} Degrees Fahrenheit`
-    windP.innerHTML = `${weatherObject.wind} MPH`
-    humidityP.innerHTML = `${weatherObject.humidity}%`
+    cityP.innerHTML = `${weatherArray[0].city} ${weatherArray[0].time}`
+    weatherIcon.src = `http://openweathermap.org/img/wn/${weatherArray[0].condition}@2x.png`
+    tempP.innerHTML = `${weatherArray[0].temperature} &deg; Fahrenheit`
+    windP.innerHTML = `${weatherArray[0].wind} MPH`
+    humidityP.innerHTML = `${weatherArray[0].humidity}%`
 
     cityBlock.appendChild(cityP)
+    cityBlock.appendChild(weatherIcon)
     tempBlock.appendChild(tempP)
     windBlock.appendChild(windP)
     humidityBlock.appendChild(humidityP)
+
+    for (let n = 0; n < 5; n++) {
+        putStuffInBoxes(weatherArray, n)
+    }
+
 }
 
+function putStuffInBoxes (arr, x) {
+
+    let dateBlock = document.getElementById(`city-day-${x + 1}`)
+    let tempBlock = document.getElementById(`temp-day-${x + 1}`)
+    let windBlock = document.getElementById(`wind-day-${x + 1}`)
+    let humidityBlock = document.getElementById(`humidity-day-${x + 1}`)
+
+    if (happenedOnce > 1) {
+        dateBlock.removeChild(dateBlock.lastChild)
+        dateBlock.removeChild(dateBlock.lastChild)
+        tempBlock.removeChild(tempBlock.lastChild)
+        windBlock.removeChild(windBlock.lastChild)
+        humidityBlock.removeChild(humidityBlock.lastChild)
+    }
 
 
+
+    let datePa = document.createElement("h2")
+    let weatherIconn = document.createElement("img")
+    let tempPa = document.createElement("p")
+    let windPa = document.createElement("p")
+    let humidityPa = document.createElement("p")
+
+
+    console.log("start putting in boxes")
+    console.log(arr[x])
+
+    datePa.innerHTML = `${arr[x+1].time}`
+    tempPa.innerHTML = `${arr[x+1].temperature} &deg; Fahrenheit`
+    windPa.innerHTML = `${arr[x+1].wind} MPH`
+    humidityPa.innerHTML = `${arr[x+1].humidity}%`
+    weatherIconn.src = `http://openweathermap.org/img/wn/${arr[x+1].condition}@2x.png`
+
+    dateBlock.appendChild(datePa)
+    dateBlock.appendChild(weatherIconn)
+    tempBlock.appendChild(tempPa)
+    windBlock.appendChild(windPa)
+    humidityBlock.appendChild(humidityPa)
+}
 
 
 
